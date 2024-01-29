@@ -4,7 +4,7 @@
   
     
     <entry>
-      <title>状态空间模型SSM的离散化过程推导</title>
+      <title>Mamba系列日积月累（一）：状态空间模型SSM的离散化过程推导</title>
       <link href="/posts/c8aa64ed/"/>
       <url>/posts/c8aa64ed/</url>
       
@@ -13,7 +13,7 @@
       
       <categories>
           
-          <category> 论文阅读 </category>
+          <category> 论文解读 </category>
           
       </categories>
       
@@ -22,7 +22,7 @@
             
             <tag> 数学 </tag>
             
-            <tag> Mamba </tag>
+            <tag> Mamba系列 </tag>
             
         </tags>
       
