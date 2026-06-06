@@ -158,8 +158,23 @@ jobs:
             --region "${ALIYUN_REGION_ID:-cn-hangzhou}" \
             --access-key-id "$ALIYUN_ACCESS_KEY_ID" \
             --access-key-secret "$ALIYUN_ACCESS_KEY_SECRET"
+
           aliyun cdn RefreshObjectCaches \
             --ObjectPath "$ALIYUN_CDN_REFRESH_URLS" \
             --ObjectType Directory || {
-              echo "::warning::Aliyun CDN refresh failed, but OSS deployment has completed."
+              echo "::warning::Aliyun CDN directory refresh failed, but OSS deployment has completed."
             }
+
+          CDN_FILE_URLS="$(find dist -type f -name index.html | while IFS= read -r index_file; do
+            route="${index_file#dist/}"
+            route="${route%/index.html}"
+            [ -n "$route" ] || continue
+            printf 'https://wuwenbinsights.com/%s\n' "$route"
+          done)"
+          if [ -n "$CDN_FILE_URLS" ]; then
+            aliyun cdn RefreshObjectCaches \
+              --ObjectPath "$CDN_FILE_URLS" \
+              --ObjectType File || {
+                echo "::warning::Aliyun CDN file refresh failed, but OSS deployment has completed."
+              }
+          fi
