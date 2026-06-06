@@ -73,8 +73,8 @@ jobs:
     env:
       OSS_ENDPOINT: oss-cn-beijing.aliyuncs.com
       OSS_BUCKET: hexo-blog-wuwenbin
-      ALIYUN_ACCESS_KEY_ID: ${{ secrets.OSS_KEY_ID || secrets.ALIYUN_ACCESS_KEY_ID }}
-      ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.OSS_KEY_SECRET || secrets.ALIYUN_ACCESS_KEY_SECRET }}
+      ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID || secrets.OSS_KEY_ID }}
+      ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET || secrets.OSS_KEY_SECRET }}
       ALIYUN_REGION_ID: cn-beijing
       ALIYUN_CDN_REFRESH_URLS: ${{ vars.ALIYUN_CDN_REFRESH_URLS }}
     steps:
