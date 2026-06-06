@@ -71,11 +71,11 @@ jobs:
     environment:
       name: aliyun-oss
     env:
-      OSS_ENDPOINT: ${{ secrets.ALIYUN_OSS_ENDPOINT }}
-      OSS_BUCKET: ${{ secrets.ALIYUN_OSS_BUCKET }}
-      ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
-      ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
-      ALIYUN_REGION_ID: ${{ vars.ALIYUN_REGION_ID }}
+      OSS_ENDPOINT: oss-cn-beijing.aliyuncs.com
+      OSS_BUCKET: hexo-blog-wuwenbin
+      ALIYUN_ACCESS_KEY_ID: ${{ secrets.OSS_KEY_ID || secrets.ALIYUN_ACCESS_KEY_ID }}
+      ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.OSS_KEY_SECRET || secrets.ALIYUN_ACCESS_KEY_SECRET }}
+      ALIYUN_REGION_ID: cn-beijing
       ALIYUN_CDN_REFRESH_URLS: ${{ vars.ALIYUN_CDN_REFRESH_URLS }}
     steps:
       - name: Download static site artifact
