@@ -23,13 +23,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --include=dev --registry=https://registry.npmjs.org/
+      - name: Verify Astro binary
+        run: |
+          node --version
+          npm --version
+          npm ls astro
+          test -x node_modules/.bin/astro
       - name: Build site
-        run: npm run build
+        run: |
+          npx --no-install astro check
+          npx --no-install astro build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
