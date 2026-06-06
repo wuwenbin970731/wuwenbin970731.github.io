@@ -91,27 +91,32 @@ jobs:
           test -n "$ALIYUN_ACCESS_KEY_ID"
           test -n "$ALIYUN_ACCESS_KEY_SECRET"
 
-      - name: Install ossutil
+      - name: Install and configure ossutil v2
         run: |
-          curl -fsSL -o ossutil64 https://gosspublic.alicdn.com/ossutil/1.7.18/ossutil64
-          chmod +x ossutil64
-          sudo mv ossutil64 /usr/local/bin/ossutil64
+          curl -fsSL -o ossutil.zip https://gosspublic.alicdn.com/ossutil/v2/2.2.1/ossutil-2.2.1-linux-amd64.zip
+          unzip -q ossutil.zip
+          sudo mv ossutil-2.2.1-linux-amd64/ossutil /usr/local/bin/
+          chmod +x /usr/local/bin/ossutil
+          ossutil version
+
+          OSS_ENDPOINT_VALUE="${OSS_ENDPOINT#http://}"
+          OSS_ENDPOINT_VALUE="${OSS_ENDPOINT_VALUE#https://}"
+          OSS_REGION_VALUE="${ALIYUN_REGION_ID:-cn-beijing}"
+          cat > ~/.ossutilconfig << EOF
+          [Credentials]
+          accessKeyID=$ALIYUN_ACCESS_KEY_ID
+          accessKeySecret=$ALIYUN_ACCESS_KEY_SECRET
+          region=$OSS_REGION_VALUE
+          [Endpoint]
+          endpoint=$OSS_ENDPOINT_VALUE
+          EOF
 
       - name: Upload dist to Aliyun OSS
         run: |
           OSS_BUCKET_NAME="${OSS_BUCKET#oss://}"
           OSS_BUCKET_NAME="${OSS_BUCKET_NAME%/}"
-          ossutil64 config \
-            -e "$OSS_ENDPOINT" \
-            -i "$ALIYUN_ACCESS_KEY_ID" \
-            -k "$ALIYUN_ACCESS_KEY_SECRET" \
-            -L CH \
-            -c .ossutilconfig
-          timeout 180s ossutil64 cp -r dist/ "oss://$OSS_BUCKET_NAME/" -f -c .ossutilconfig \
-            --connect-timeout 10 --read-timeout 30 --loglevel info || {
-            find ossutil_output -type f -print -exec cat {} \; || true
-            exit 1
-          }
+          OSS_REGION_VALUE="${ALIYUN_REGION_ID:-cn-beijing}"
+          timeout 300s ossutil sync dist/ "oss://$OSS_BUCKET_NAME/" --delete --force --region "$OSS_REGION_VALUE"
 
       - name: Refresh Aliyun CDN
         if: ${{ vars.ALIYUN_CDN_REFRESH_URLS != '' }}
