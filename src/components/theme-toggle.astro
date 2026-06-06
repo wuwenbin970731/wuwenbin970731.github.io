@@ -17,16 +17,24 @@ import { Icon } from 'astro-icon/components'
 
 <script is:inline data-astro-rerun>
   ;(() => {
-    const theme = (() => {
+    const getTheme = () => {
       const stored = localStorage?.getItem('theme') ?? ''
       if (['dark', 'light'].includes(stored)) return stored
       return window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light'
+    }
+
+    const theme = (() => {
+      return getTheme()
     })()
 
     document.documentElement.setAttribute('data-theme', theme)
     window.localStorage.setItem('theme', theme)
+
+    document.addEventListener('astro:before-swap', (event) => {
+      event.newDocument.documentElement.setAttribute('data-theme', getTheme())
+    })
   })()
 </script>
 

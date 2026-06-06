@@ -1,81 +1,81 @@
 ---
-import BlogCard from '@/components/blog-card.astro'
 import Link from '@/components/link.astro'
 import PageHead from '@/components/page-head.astro'
 import { buttonVariants } from '@/components/ui/button'
-import { SITE } from '@/consts'
 import Layout from '@/layouts/layout.astro'
-import { getRecentPosts } from '@/lib/data-utils'
 
-const blog = await getRecentPosts(SITE.featuredPostCount)
+const topics = [
+  { label: '技术', color: 'var(--primary)' },
+  { label: '阅读', color: 'var(--accent-lilac)' },
+  { label: '研究', color: 'var(--accent-coral)' },
+  { label: '工具', color: 'var(--accent-lemon)' },
+  { label: '观察', color: 'var(--accent-sky)' },
+  { label: '生活记录', color: 'var(--accent-mint)' },
+]
+
+const notes = [
+  '记录正在学习的概念、读过的文章、偶然遇到的问题，以及当时的理解。',
+  '保存一些不一定完整但值得回头看的想法：技术、工具、产品、书、电影，或某个具体的日常瞬间。',
+  '允许内容慢慢生长，而不是把每一篇都写成结论明确的正式文章。',
+]
 ---
 
 <Layout class="max-w-3xl">
-  <PageHead slot="head" title="Home" />
-  <section class="rounded-lg border">
-    <div class="flex flex-col space-y-1.5 p-6">
-      <h3 class="text-3xl leading-none font-medium">er·u·dite</h3>
-      <p class="text-muted-foreground text-sm">
-        /ˈer(y)əˌdīt/ &bull; <span class="font-medium">adjective</span>
+  <PageHead slot="head" title="首页" />
+  <section class="home-intro surface overflow-hidden rounded-lg border">
+    <div class="rainbow-rule" />
+    <div class="p-5 sm:p-6">
+      <p class="text-primary mb-3 text-sm font-medium">
+        你好，欢迎来到我的个人笔记。
       </p>
-    </div>
-    <div class="p-6 pt-0">
-      <p class="text-muted-foreground mb-2 text-sm">
-        astro-erudite is an opinionated, unstyled static blogging template built
-        with <Link
-          href="https://astro.build"
-          class="text-foreground"
-          external
-          underline>Astro</Link
-        >, <Link
-          href="https://tailwindcss.com"
-          class="text-foreground"
-          external
-          underline>Tailwind</Link
-        >, and <Link
-          href="https://ui.shadcn.com"
-          class="text-foreground"
-          external
-          underline>shadcn/ui</Link
-        >. Extraordinarily loosely based on the <Link
-          href="https://astro-micro.vercel.app/"
-          class="text-foreground"
-          external
-          underline>Astro Micro</Link
-        > theme.
-      </p>
-      <p class="text-muted-foreground text-sm">
-        To use this template, check out the <Link
-          href="https://github.com/jktrn/astro-erudite"
-          class="text-foreground"
-          underline
-          external>GitHub</Link
-        > repository. To learn more about why this template exists, read this blog
-        post: <Link
-          href="/blog/the-state-of-static-blogs"
-          class="text-foreground"
-          underline>The State of Static Blogs in 2024</Link
-        >.
-      </p>
+      <h1 class="mb-4 text-2xl leading-tight font-semibold sm:text-3xl">
+        记录一些正在发生的东西
+      </h1>
+      <div class="text-muted-foreground space-y-3 text-sm leading-6">
+        <p>
+          我希望这个网站像一个可以长期整理的抽屉：放下学习、阅读、技术、观察和生活里一些值得留下的片段。
+          有些内容是笔记，有些是摘记，有些只是一个阶段里反复出现的问题、兴趣和判断。
+        </p>
+        <p>
+          它不需要只服务于某一个主题，也不需要每篇文章都有完整答案。更重要的是，把当下真实关心的东西留下来，等未来的自己重新经过。
+        </p>
+      </div>
+      <div class="mt-5 flex flex-wrap gap-2">
+        {
+          topics.map((topic) => (
+            <span
+              class="topic-chip inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
+              style={`--chip-color: ${topic.color}`}
+            >
+              <span class="topic-dot size-1.5 rounded-full" />
+              {topic.label}
+            </span>
+          ))
+        }
+      </div>
     </div>
   </section>
-  <section class="flex flex-col gap-y-4">
-    <h2 class="text-2xl font-medium">Latest posts</h2>
-    <ul class="flex flex-col gap-y-4">
+  <section class="surface rounded-lg border p-5 sm:p-6">
+    <div class="flex items-center gap-3">
+      <h2 class="text-xl font-semibold">这里可能会出现什么</h2>
+      <div class="bg-border h-px flex-1" />
+    </div>
+    <ul class="mt-4 grid gap-3 text-sm leading-6 text-muted-foreground">
       {
-        blog.map((post) => (
-          <li>
-            <BlogCard entry={post} />
+        notes.map((note) => (
+          <li class="flex gap-3">
+            <span class="topic-dot mt-2 size-1.5 shrink-0 rounded-full" />
+            <span>{note}</span>
           </li>
         ))
       }
     </ul>
-    <div class="flex justify-center">
+    <div class="mt-5">
       <Link
         href="/blog"
-        class={buttonVariants({ variant: 'ghost' }) + ' group'}
+        class={buttonVariants({ variant: 'outline' }) + ' group'}
       >
-        See all posts <span
+        查看文章 <span
           class="ml-1.5 transition-transform group-hover:translate-x-1"
           >&rarr;</span
         >

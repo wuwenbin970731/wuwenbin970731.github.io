@@ -24,28 +24,37 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
 ---
 
 <Layout class="max-w-3xl">
-  <PageHead slot="head" title="Blog" />
+  <PageHead slot="head" title="文章" />
   <Breadcrumbs
     items={[
-      { label: 'Blog', href: '/blog', icon: 'lucide:library-big' },
-      { label: `Page ${page.currentPage}`, icon: 'lucide:book-copy' },
+      { label: '文章', href: '/blog', icon: 'lucide:library-big' },
+      { label: `第 ${page.currentPage} 页`, icon: 'lucide:book-copy' },
     ]}
   />
 
   <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
     {
-      years.map((year) => (
-        <section class="flex flex-col gap-y-4">
-          <div class="font-medium">{year}</div>
-          <ul class="flex flex-col gap-4">
-            {postsByYear[year].map((post) => (
-              <li>
-                <BlogCard entry={post} />
-              </li>
-            ))}
-          </ul>
+      years.length > 0 ? (
+        years.map((year) => (
+          <section class="flex flex-col gap-y-4">
+            <div class="font-medium">{year}</div>
+            <ul class="flex flex-col gap-4">
+              {postsByYear[year].map((post) => (
+                <li>
+                  <BlogCard entry={post} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      ) : (
+        <section class="surface rounded-lg border p-6">
+          <h1 class="mb-3 text-2xl font-semibold">暂未发布文章</h1>
+          <p class="text-muted-foreground text-sm leading-6">
+            暂未发布任何文章。后续我会持续更新我的技术笔记、论文阅读、工程记录和生活随笔。
+          </p>
         </section>
-      ))
+      )
     }
   </div>
 

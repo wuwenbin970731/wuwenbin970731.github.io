@@ -280,6 +280,31 @@ const tocSections = await getTOCSections(currentPostId)
         })
       }
     })
+
+    const noteToggles = document.querySelectorAll<HTMLLabelElement>(
+      '.sidenote-toggle',
+    )
+
+    if (noteToggles.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const toggle = entry.target as HTMLLabelElement
+            const id = toggle.getAttribute('for')
+            const note = id ? document.getElementById(`${id}-note`) : null
+
+            toggle.classList.toggle('active', entry.isIntersecting)
+            note?.classList.toggle('active', entry.isIntersecting)
+          })
+        },
+        {
+          rootMargin: '-20% 0px -60% 0px',
+          threshold: 0,
+        },
+      )
+
+      noteToggles.forEach((toggle) => observer.observe(toggle))
+    }
   </script>
 </Layout>
 

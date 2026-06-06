@@ -1,0 +1,26 @@
+---
+interface Props {
+  n: number | string
+}
+
+const { n } = Astro.props
+const id = `sn-${n}`
+---
+
+<label
+  for={id}
+  class="sidenote-toggle sidenote-number not-prose"
+  aria-describedby={`${id}-note`}
+>
+  {n}
+</label>
+<input
+  type="checkbox"
+  id={id}
+  class="sidenote-checkbox"
+  aria-label={`Toggle sidenote ${n}`}
+/>
+<span class="sidenote not-prose" role="note" id={`${id}-note`}>
+  <span class="sidenote-number-inline">{n}</span>
+  <slot />
+</span>
