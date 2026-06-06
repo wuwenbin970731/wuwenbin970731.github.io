@@ -130,22 +130,8 @@ jobs:
             route="${route%/index.html}"
             [ "$route" != "index.html" ] || continue
             [ -n "$route" ] || continue
-            redirect_url="/$route/"
-            cat > .oss-redirect.html << EOF
-          <!doctype html>
-          <html lang="zh-CN">
-            <head>
-              <meta charset="utf-8">
-              <meta http-equiv="refresh" content="0;url=$redirect_url">
-              <link rel="canonical" href="$redirect_url">
-              <script>location.replace("$redirect_url")</script>
-            </head>
-            <body><a href="$redirect_url">Redirecting to $redirect_url</a></body>
-          </html>
-          EOF
-            ossutil cp .oss-redirect.html "oss://$OSS_BUCKET_NAME/$route" --force --region "$OSS_REGION_VALUE" --content-type text/html
+            ossutil cp "$index_file" "oss://$OSS_BUCKET_NAME/$route" --force --region "$OSS_REGION_VALUE" --content-type text/html
           done
-          rm -f .oss-redirect.html
 
       - name: Refresh Aliyun CDN
         if: ${{ vars.ALIYUN_CDN_REFRESH_URLS != '' }}
