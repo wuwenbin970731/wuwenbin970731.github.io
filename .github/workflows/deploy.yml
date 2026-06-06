@@ -142,7 +142,7 @@ jobs:
             <body><a href="$redirect_url">Redirecting to $redirect_url</a></body>
           </html>
           EOF
-            ossutil cp .oss-redirect.html "oss://$OSS_BUCKET_NAME/$route" --force --region "$OSS_REGION_VALUE"
+            ossutil cp .oss-redirect.html "oss://$OSS_BUCKET_NAME/$route" --force --region "$OSS_REGION_VALUE" --content-type text/html
           done
           rm -f .oss-redirect.html
 
