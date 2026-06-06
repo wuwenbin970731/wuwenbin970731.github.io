@@ -102,8 +102,9 @@ jobs:
             -k "$ALIYUN_ACCESS_KEY_SECRET" \
             -L CH \
             -c .ossutilconfig
-          ossutil64 cp -r dist/ "oss://$OSS_BUCKET_NAME/" -f -c .ossutilconfig || {
-            find ossutil_output -type f -name '*.report' -print -exec cat {} \;
+          timeout 180s ossutil64 cp -r dist/ "oss://$OSS_BUCKET_NAME/" -f -c .ossutilconfig \
+            --connect-timeout 10 --read-timeout 30 --loglevel info || {
+            find ossutil_output -type f -print -exec cat {} \; || true
             exit 1
           }
 
