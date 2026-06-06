@@ -6,10 +6,10 @@ import sitemap from '@astrojs/sitemap'
 import icon from 'astro-icon'
 
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
+import rehypeShiki from '@shikijs/rehype'
 import rehypeExpressiveCode from 'rehype-expressive-code'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeKatex from 'rehype-katex'
-import rehypeShiki from '@shikijs/rehype'
 import remarkEmoji from 'remark-emoji'
 import remarkMath from 'remark-math'
 
