@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+import { withTrailingSlash } from '@/lib/url-utils'
 import { Button, buttonVariants } from '@/components/ui/button'
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
@@ -45,6 +46,7 @@ type PaginationLinkProps = {
 
 function PaginationLink({
   className,
+  href,
   isActive,
   isDisabled,
   size = 'icon',
@@ -52,6 +54,7 @@ function PaginationLink({
 }: PaginationLinkProps) {
   return (
     <a
+      href={withTrailingSlash(href)}
       aria-current={isActive ? 'page' : undefined}
       data-slot="pagination-link"
       data-active={isActive}
@@ -133,7 +136,7 @@ const PaginationComponent: React.FC<PaginationProps> = ({
 
   const getPageUrl = (page: number) => {
     if (page === 1) return baseUrl
-    return `${baseUrl}${page}`
+    return `${baseUrl}${page}/`
   }
 
   return (
