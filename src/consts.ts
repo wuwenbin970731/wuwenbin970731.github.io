@@ -4,7 +4,7 @@ export const SITE: Site = {
   title: 'Wenbin Notes',
   description:
     '一个用于记录学习、阅读、技术、观察和生活片段的个人博客。',
-  href: 'https://example.com',
+  href: 'https://wuwenbinsights.com',
   author: 'Wenbin',
   locale: 'zh-CN',
   featuredPostCount: 4,
