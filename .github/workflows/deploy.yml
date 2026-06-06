@@ -102,7 +102,10 @@ jobs:
             -k "$ALIYUN_ACCESS_KEY_SECRET" \
             -L CH \
             -c .ossutilconfig
-          ossutil64 cp -r dist/ "oss://$OSS_BUCKET_NAME/" -f -c .ossutilconfig
+          ossutil64 cp -r dist/ "oss://$OSS_BUCKET_NAME/" -f -c .ossutilconfig || {
+            find ossutil_output -type f -name '*.report' -print -exec cat {} \;
+            exit 1
+          }
 
       - name: Refresh Aliyun CDN
         if: ${{ vars.ALIYUN_CDN_REFRESH_URLS != '' }}
