@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy site
 
 on:
   # 每次推送到 `main` 分支时触发这个“工作流程”
@@ -38,12 +38,18 @@ jobs:
         run: |
           npx --no-install astro check
           npx --no-install astro build
+      - name: Upload static site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+          if-no-files-found: error
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
-  deploy:
+  deploy-github-pages:
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -53,3 +59,61 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  deploy-aliyun-oss:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: aliyun-oss
+    env:
+      OSS_ENDPOINT: ${{ secrets.ALIYUN_OSS_ENDPOINT }}
+      OSS_BUCKET: ${{ secrets.ALIYUN_OSS_BUCKET }}
+      ALIYUN_ACCESS_KEY_ID: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
+      ALIYUN_ACCESS_KEY_SECRET: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+      ALIYUN_REGION_ID: ${{ vars.ALIYUN_REGION_ID }}
+      ALIYUN_CDN_REFRESH_URLS: ${{ vars.ALIYUN_CDN_REFRESH_URLS }}
+    steps:
+      - name: Download static site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+
+      - name: Validate Aliyun configuration
+        run: |
+          test -n "$OSS_ENDPOINT"
+          test -n "$OSS_BUCKET"
+          test -n "$ALIYUN_ACCESS_KEY_ID"
+          test -n "$ALIYUN_ACCESS_KEY_SECRET"
+
+      - name: Install ossutil
+        run: |
+          curl -fsSL -o ossutil64 https://gosspublic.alicdn.com/ossutil/1.7.19/ossutil64
+          chmod +x ossutil64
+          sudo mv ossutil64 /usr/local/bin/ossutil64
+
+      - name: Sync dist to Aliyun OSS
+        run: |
+          ossutil64 config \
+            -e "$OSS_ENDPOINT" \
+            -i "$ALIYUN_ACCESS_KEY_ID" \
+            -k "$ALIYUN_ACCESS_KEY_SECRET" \
+            -L CH \
+            -c .ossutilconfig
+          ossutil64 sync dist/ "oss://$OSS_BUCKET/" --delete -f -c .ossutilconfig
+
+      - name: Refresh Aliyun CDN
+        if: ${{ vars.ALIYUN_CDN_REFRESH_URLS != '' }}
+        run: |
+          curl -fsSL -o aliyun-cli.tgz https://aliyuncli.alicdn.com/aliyun-cli-linux-latest-amd64.tgz
+          tar -xzf aliyun-cli.tgz
+          sudo mv aliyun /usr/local/bin/aliyun
+          aliyun configure set \
+            --profile default \
+            --mode AK \
+            --region "${ALIYUN_REGION_ID:-cn-hangzhou}" \
+            --access-key-id "$ALIYUN_ACCESS_KEY_ID" \
+            --access-key-secret "$ALIYUN_ACCESS_KEY_SECRET"
+          aliyun cdn RefreshObjectCaches \
+            --ObjectPath "$ALIYUN_CDN_REFRESH_URLS" \
+            --ObjectType Directory
