@@ -92,7 +92,7 @@ jobs:
           chmod +x ossutil64
           sudo mv ossutil64 /usr/local/bin/ossutil64
 
-      - name: Sync dist to Aliyun OSS
+      - name: Upload dist to Aliyun OSS
         run: |
           OSS_BUCKET_NAME="${OSS_BUCKET#oss://}"
           OSS_BUCKET_NAME="${OSS_BUCKET_NAME%/}"
@@ -102,8 +102,7 @@ jobs:
             -k "$ALIYUN_ACCESS_KEY_SECRET" \
             -L CH \
             -c .ossutilconfig
-          ossutil64 ls "oss://$OSS_BUCKET_NAME/" -c .ossutilconfig
-          ossutil64 sync dist/ "oss://$OSS_BUCKET_NAME/" --delete -f -c .ossutilconfig
+          ossutil64 cp -r dist/ "oss://$OSS_BUCKET_NAME/" -f -c .ossutilconfig
 
       - name: Refresh Aliyun CDN
         if: ${{ vars.ALIYUN_CDN_REFRESH_URLS != '' }}
