@@ -1,4 +1,4 @@
-import type { IconMap, SocialLink, Site } from '@/types'
+import type { IconMap, Site, SocialLink } from '@/types'
 
 export const SITE: Site = {
   title: 'Wenbin Notes',
@@ -32,7 +32,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: 'GitHub',
   },
   {
-    href: 'mailto:hello@example.com',
+    href: 'mailto:wuwenbin970731@gmail.com',
     label: 'Email',
   },
   {

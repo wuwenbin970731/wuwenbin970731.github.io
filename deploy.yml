@@ -1,0 +1,87 @@
+name: Hexo Deploy to GitHub Pages and Aliyun OSS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate static files
+        run: |
+          pnpm exec hexo clean
+          pnpm exec hexo generate
+
+      - name: Setup Git and SSH
+        env:
+          HEXO_DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$HEXO_DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          pnpm exec hexo deploy --generate --config _config.yml --type git
+
+      - name: Install and configure ossutil v2
+        run: |
+          # 下载并安装 ossutil v2.2.1
+          curl -o ossutil.zip https://gosspublic.alicdn.com/ossutil/v2/2.2.1/ossutil-2.2.1-linux-amd64.zip
+          unzip -q ossutil.zip
+          sudo mv ossutil-2.2.1-linux-amd64/ossutil /usr/local/bin/
+          chmod +x /usr/local/bin/ossutil
+          
+          # 验证版本
+          ossutil version
+          
+          # 配置 ossutil v2（添加 region 配置）
+          cat > ~/.ossutilconfig << EOF
+          [Credentials]
+          accessKeyID=${{ secrets.OSS_KEY_ID }}
+          accessKeySecret=${{ secrets.OSS_KEY_SECRET }}
+          region=cn-beijing
+          [Endpoint]
+          endpoint=oss-cn-beijing.aliyuncs.com
+          EOF
+
+      - name: Deploy to Aliyun OSS
+        run: |
+          # 使用 ossutil v2 的 sync 命令
+          ossutil sync public/ oss://hexo-blog-wuwenbin/ --delete --force --region cn-beijing
