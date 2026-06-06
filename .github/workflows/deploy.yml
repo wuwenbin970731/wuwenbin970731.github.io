@@ -131,6 +131,7 @@ jobs:
             [ "$route" != "index.html" ] || continue
             [ -n "$route" ] || continue
             ossutil cp "$index_file" "oss://$OSS_BUCKET_NAME/$route" --force --region "$OSS_REGION_VALUE" --content-type text/html
+            ossutil cp "$index_file" "oss://$OSS_BUCKET_NAME/$route/" --force --region "$OSS_REGION_VALUE" --content-type text/html
           done
 
       - name: Refresh Aliyun CDN
