@@ -139,4 +139,6 @@ jobs:
             --access-key-secret "$ALIYUN_ACCESS_KEY_SECRET"
           aliyun cdn RefreshObjectCaches \
             --ObjectPath "$ALIYUN_CDN_REFRESH_URLS" \
-            --ObjectType Directory
+            --ObjectType Directory || {
+              echo "::warning::Aliyun CDN refresh failed, but OSS deployment has completed."
+            }
