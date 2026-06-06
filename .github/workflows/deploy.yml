@@ -94,13 +94,16 @@ jobs:
 
       - name: Sync dist to Aliyun OSS
         run: |
+          OSS_BUCKET_NAME="${OSS_BUCKET#oss://}"
+          OSS_BUCKET_NAME="${OSS_BUCKET_NAME%/}"
           ossutil64 config \
             -e "$OSS_ENDPOINT" \
             -i "$ALIYUN_ACCESS_KEY_ID" \
             -k "$ALIYUN_ACCESS_KEY_SECRET" \
             -L CH \
             -c .ossutilconfig
-          ossutil64 sync dist/ "oss://$OSS_BUCKET/" --delete -f -c .ossutilconfig
+          ossutil64 ls "oss://$OSS_BUCKET_NAME/" -c .ossutilconfig
+          ossutil64 sync dist/ "oss://$OSS_BUCKET_NAME/" --delete -f -c .ossutilconfig
 
       - name: Refresh Aliyun CDN
         if: ${{ vars.ALIYUN_CDN_REFRESH_URLS != '' }}
